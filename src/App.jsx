@@ -1,35 +1,37 @@
 import { useEffect, useState } from "react";
-import Header from "./components/Header.jsx";
-import MenuCard from "./components/MenuCard.jsx";
-import Footer from "./components/Footer.jsx";
+import { Routes, Route } from "react-router";
+import Layout from "./components/Layout.jsx";
+import MenuPage from "./pages/MenuPage.jsx";
+import MenuDetailPage from "./pages/MenuDetailPage.jsx";
+import CartPage from "./pages/CartPage.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 
-// 담은 개수는 App이 state로 기억하고 Header와 MenuCard에 props로 내려보냅니다
+// 담은 메뉴는 페이지를 옮겨 다녀도 남도록, 라우트 바깥의 App이 기억합니다
 function App() {
-  const [count, setCount] = useState(0);
+  const [cart, setCart] = useState([]);
 
-  // 담은 개수가 바뀔 때마다 브라우저 탭의 제목을 바꿉니다(사이드 이펙트)
   useEffect(() => {
-    document.title = count > 0 ? `(${count}) 오즈 카페` : "오즈 카페";
-  }, [count]);
+    document.title = cart.length > 0 ? `(${cart.length}) 오즈 카페` : "오즈 카페";
+  }, [cart.length]);
 
-  function handleAdd() {
-    setCount(count + 1);
+  function handleAdd(menu) {
+    setCart([...cart, menu]);
+  }
+
+  function handleRemove(index) {
+    setCart(cart.filter((_, i) => i !== index)); // 그 번호만 빼고 새 배열
   }
 
   return (
-    <>
-      <Header count={count}/>
-      <main>
-        <h2>메뉴</h2>
-        <div className="menu-list">
-          <MenuCard name="아메리카노" price={4000} desc="깊고 고소한 기본 커피" onAdd={handleAdd} />
-          <MenuCard name="카페 라테" price={4500} desc="우유를 넉넉히 넣은 커피" onAdd={handleAdd} />
-          <MenuCard name="자몽 에이드" price={5000} desc="상큼한 자몽과 탄산" onAdd={handleAdd} />
-          <MenuCard name="소금빵" price={3500} onAdd={handleAdd} />
-        </div>
-      </main>
-      <Footer />
-    </>
+    <Routes>
+      {/* 모든 페이지가 Layout(머리말 · 꼬리말) 안에 그려집니다 */}
+      <Route element={<Layout count={cart.length} />}>
+        <Route TODO 2 element={<MenuPage onAdd={handleAdd} />} />
+        <Route path="menu/TODO 3" element={<MenuDetailPage onAdd={handleAdd} />} />
+        <Route path="cart" element={<CartPage cart={cart} onRemove={handleRemove} />} />
+        <Route path="TODO 4" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }
 
