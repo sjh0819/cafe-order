@@ -10,7 +10,7 @@ function CartPage({ cart, user, onRemove, onClear }) {
   const total = cart.reduce((sum, menu) => sum + menu.price, 0);
 
   function handleOrder() {
-    (collection(db, "users", user.uid, "orders"), {
+    addDoc(collection(db, "users", user.uid, "orders"), {
       items: cart.map((menu) => menu.name),
       total,
       createdAt: serverTimestamp(),
